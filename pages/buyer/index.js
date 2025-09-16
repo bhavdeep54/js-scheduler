@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/Header';
+import Image from "next/image";
 
 export default function BuyerList() {
   const [sellers, setSellers] = useState([]);
@@ -17,7 +18,7 @@ export default function BuyerList() {
         {sellers.map(s => (
           <li key={s._id} style={{ marginBottom: 8 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              {s.picture ? <img src={s.picture} width={48} height={48} alt="" /> : null}
+              {s.picture ? <Image src={s.picture} width={48} height={48} alt="" /> : null}
               <div>
                 <div><strong>{s.name}</strong></div>
                 <div>{s.email}</div>

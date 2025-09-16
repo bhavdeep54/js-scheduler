@@ -13,7 +13,7 @@ export default function BookSeller() {
   useEffect(() => {
     if (!sellerId) return;
     fetchSlots();
-  }, [sellerId, date]);
+  }, [sellerId, date,fetchSlots]);
 
   async function fetchSlots() {
     setLoading(true);
