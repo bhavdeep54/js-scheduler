@@ -1,30 +1,24 @@
-// pages/appointments.js
-import { useEffect, useState } from 'react';
-import Header from '../components/Header';
+// pages/api/appointments.js
+import dbConnect from "../../lib/mongoose";
+import Appointment from "../../models/Appointment";
+import { getSession } from "../../lib/auth";
 
-export default function AppointmentsPage() {
-  const [appointments, setAppointments] = useState([]);
+export default async function handler(req, res) {
+  await dbConnect();
+  const session = await getSession(req);
 
-  useEffect(() => {
-    fetch('/api/appointments')
-      .then(r => r.json())
-      .then(j => setAppointments(j.appointments || []))
-      .catch(console.error);
-  }, []);
+  if (!session) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
-  return (
-    <div style={{ maxWidth: 900, margin: '20px auto' }}>
-      <Header />
-      <h2>Your Appointments</h2>
-      <ul>
-        {appointments.map(a => (
-          <li key={a._id} style={{ marginBottom: 12 }}>
-            <div><strong>{a.seller.name} — {a.buyer.name}</strong></div>
-            <div>{new Date(a.start).toLocaleString()} - {new Date(a.end).toLocaleString()}</div>
-            {a.meetingLink ? <div><a href={a.meetingLink} target="_blank">Join Meeting</a></div> : null}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  try {
+    const appointments = await Appointment.find({
+      $or: [{ buyer: session.userId }, { seller: session.userId }],
+    }).populate("buyer seller");
+
+    res.status(200).json(appointments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch appointments" });
+  }
 }
