@@ -2,7 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // or true if you want to skip linting
   },
 };
-module.exports = nextConfig;
+
+export default nextConfig;
