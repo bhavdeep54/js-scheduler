@@ -46,11 +46,12 @@ export default async function handler(req, res) {
   } else {
     user.name = name;
     user.picture = picture;
-    user.role = user.role || stateObj.role || "buyer";
+    // ✅ always update role from login choice (overwrite old one)
+    user.role = stateObj.role || "buyer";
     await user.save();
   }
 
-  // If refresh_token is returned, store it
+  // If refresh_token is returned, store it (for both buyers & sellers)
   if (tokens.refresh_token) {
     const encrypted = encrypt(tokens.refresh_token);
     await Seller.findOneAndUpdate(
